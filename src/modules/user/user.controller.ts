@@ -48,7 +48,92 @@ const accessUsers = async (req: Request, res: Response) => {
     });
   }
 };
+
+const accessUser = async (req: Request, res: Response) => {
+  try {
+    const result = await userServices.accessUserDB(req.params.id!);
+
+    console.log(result.rows);
+    if (!result.rows.length) {
+      res.status(404).json({
+        sucess: false,
+        message: "user is not found!",
+        userID: req.params.id,
+      });
+    }
+
+    res.status(200).json({
+      sucess: true,
+      message: "User retrived successfully!",
+      data: result.rows[0],
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      sucess: false,
+      message: "Users didn't retrived successfully!",
+      data: error,
+    });
+  }
+};
+
+const updateUser = async (req: Request, res: Response) => {
+  const { name, email } = req.body;
+  try {
+    const result = await userServices.updateUserDB(name, email, req.params.id!);
+    console.log(result.rows);
+    if (!result.rows.length) {
+      res.status(404).json({
+        sucess: false,
+        message: "user is not found!",
+        userID: req.params.id,
+      });
+    }
+
+    res.status(200).json({
+      sucess: true,
+      message: "User retrived successfully!",
+      data: result.rows[0],
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      sucess: false,
+      message: "Users didn't retrived successfully!",
+      data: error.message,
+    });
+  }
+};
+
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const result = await userServices.deleteUserDB(req.params.id!);
+
+    console.log("Delete method: ", result);
+    if (!result.rowCount) {
+      res.status(404).json({
+        sucess: false,
+        message: "user is not found!",
+        userID: req.params.id,
+      });
+    }
+
+    res.status(200).json({
+      sucess: true,
+      message: "User deleted successfully!",
+      data: null,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      sucess: false,
+      message: "Users didn't retrived successfully!",
+      data: error,
+    });
+  }
+};
+
 export const userControllers = {
   createUser,
   accessUsers,
+  accessUser,
+  updateUser,
+  deleteUser,
 };
